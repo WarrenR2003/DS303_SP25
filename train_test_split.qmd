@@ -178,28 +178,43 @@ Now try applying the same workflow to another dataset: `diamonds`
 ## Step 1: Create a Train/Test Split
 
 ```{r}
-
+glimpse(diamonds)
+diamonds<- diamonds
+train_index <- createDataPartition(diamonds$carat, p = 0.8, list = FALSE)
+train_data <- diamonds[train_index, ]
+test_data <- diamonds[-train_index, ]
 ```
 
 ## Step 2: Fit Two Models on the Training Set
 
 ```{r}
-
+model_simple <- lm(carat ~ cut, data = train_data)
+model_complex <- lm(carat ~ cut + color + clarity + depth, data = train_data)
+summary(model_simple)
+summary(model_complex)
+anova (model_simple, model_complex)
 ```
 
 ## Step 3: Predict on the Test Set
 
 ```{r}
+pred_simple <- predict(model_simple, test_data)
+pred_complex <- predict(model_complex, test_data)
 
+rmse(test_data$carat, pred_simple)
+rmse(test_data$carat, pred_complex)
 ```
 
 ## Step 4: Compare Train and Test RMSE
 
 ```{r}
-
+rmse(train_data$carat, predict(model_simple, train_data))
+rmse(train_data$carat, predict(model_complex, train_data))
 ```
 
 Which is the better model and why?
+
+In my case, the complex model was more accurate as the RMSE was a lower value than the simple, regardless of how close the two values are to each other
 
 ------------------------------------------------------------------------
 
